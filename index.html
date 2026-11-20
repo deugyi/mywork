@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-EHAHuuUzK65aJ9jqmMvjmAu1fd4zwf0f8bmQyRCS9UQ='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>내 근무 입력</title>
+<style>body.my-on>*:not(#site-my){display:none!important}
+body.my-on{background:#f3f5f7;margin:0}
+.my{min-height:100vh;color:#17212b;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;font-size:18px;line-height:1.5;-webkit-text-size-adjust:100%}
+.my[hidden]{display:none}
+.my *{box-sizing:border-box}
+.my-wrap{max-width:560px;margin:0 auto;padding:16px 14px 120px}
+.my-top{display:flex;align-items:baseline;gap:10px;margin:4px 2px 6px}
+.my-top h1{margin:0;padding:0;border:0;background:none;font-size:26px;letter-spacing:-.5px;color:#17212b}
+.my-top span{color:#66737f;font-size:15px}
+.my-note{min-height:27px;margin:0 2px 8px;color:#1f5f8b;font-weight:600}
+.my-note.my-error{color:#b3261e}
+.my-wait{margin:40px 0;text-align:center;color:#66737f}
+.my-card{display:grid;gap:12px;padding:18px 16px;border:1px solid #d5dce2;border-radius:14px;background:#fff}
+.my-lead{margin:0;font-size:19px}
+.my button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.my button:disabled{cursor:default}
+.my-big{display:block;width:100%;min-height:60px;padding:10px 14px;border:2px solid #1f5f8b;border-radius:12px;background:#1f5f8b;color:#fff;font-size:21px;font-weight:700}
+.my-big.my-plain{background:#fff;color:#1f5f8b}
+.my-warn{padding:12px 14px;border:2px solid #e0a800;border-radius:12px;background:#fff8dc;display:grid;gap:8px}
+.my-warn p{margin:0;font-size:16px}
+.my-field{display:grid;gap:6px;font-size:16px;color:#4a5762}
+.my-field input{width:100%;height:58px;padding:0 14px;border:2px solid #aeb9c2;border-radius:12px;font:inherit;font-size:22px;color:#17212b;background:#fff}
+.my-who{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 2px 10px}
+.my-who b{font-size:24px}
+.my-who span{color:#4a5762;font-size:16px}
+.my-seg{display:flex;gap:6px;margin:0 0 10px}
+.my-seg button{flex:1;min-height:58px;padding:6px 8px;border:2px solid #aeb9c2;border-radius:12px;background:#fff;color:#4a5762;font-size:18px;font-weight:600;line-height:1.25}
+.my-seg small{display:block;font-size:14px;font-weight:400}
+.my-seg button.on{border-color:#1f5f8b;background:#1f5f8b;color:#fff}
+.my-state{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:#e8f0f6;font-size:16px}
+.my-state.my-revise{background:#fff2b8}
+.my-state.my-closed{background:#fbe1d3;font-weight:600}
+.my-week,.my-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.my-week{margin-bottom:4px;text-align:center;font-size:15px;font-weight:600;color:#4a5762}
+.my-week .my-sun{color:#c0392b}
+.my-week .my-sat{color:#1f4fb5}
+.my-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;min-height:66px;padding:5px 1px 4px;border:2px solid #d5dce2;border-radius:10px;background:#fff;color:#17212b;overflow:hidden}
+.my-day .my-num{font-size:15px;font-weight:600;line-height:1.2}
+.my-day .my-mark{display:flex;align-items:center;justify-content:center;font-size:25px;line-height:1.15;font-weight:700;color:#1f5f8b;min-height:29px}
+.my-day .my-mark svg{width:26px;height:26px}
+.my-day .my-mark.my-word{font-size:12.5px;line-height:1.2;padding-top:3px;word-break:keep-all;text-align:center}
+.my-day.my-off{background:#fbe9df}
+.my-day.my-off .my-num{color:#c0392b}
+.my-day.my-sat{background:#e3edf8}
+.my-day.my-sat .my-num{color:#1f4fb5}
+.my-day.my-has{border-color:#1f5f8b}
+.my-day.my-today{box-shadow:inset 0 0 0 2px #e0a800}
+.my-day.my-pick{border-color:#17212b;box-shadow:0 0 0 3px #17212b33}
+.my-day:disabled{opacity:.55}
+.my-day.my-out{background:#e3e6e9;opacity:.5}
+.my-sum{display:flex;flex-wrap:wrap;gap:4px 16px;margin:12px 2px 0;font-size:16px;color:#4a5762}
+.my-sum span{white-space:nowrap}
+.my-sum b{color:#17212b;font-size:20px;margin-left:2px}
+.my-sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;max-width:588px;max-height:82vh;margin:0 auto;padding:14px 14px 18px;overflow:auto;border:2px solid #17212b;border-bottom:0;border-radius:18px 18px 0 0;background:#fff;box-shadow:0 -8px 30px rgba(23,33,43,.28);display:grid;gap:10px}
+.my-sheet-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.my-sheet-head b{font-size:22px}
+.my-sheet-head span{color:#4a5762;font-size:16px;flex:1}
+.my-sheet-head button{min-height:44px;padding:0 16px;border:2px solid #aeb9c2;border-radius:10px;background:#fff;color:#17212b;font-size:17px}
+.my-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.my-choice{min-height:62px;padding:6px 8px;border:2px solid #aeb9c2;border-radius:12px;background:#fff;color:#17212b;font-size:21px;font-weight:700;line-height:1.2}
+.my-choice.my-wide{grid-column:1/-1}
+.my-choice svg{width:24px;height:24px;margin-right:8px;vertical-align:-4px;color:#1f5f8b}
+.my-choice small{display:block;font-size:14px;font-weight:400;color:#66737f}
+.my-choice.on{border-color:#1f5f8b;background:#e8f0f6;box-shadow:inset 0 0 0 2px #1f5f8b}
+.my-foot{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:15px;color:#66737f}
+.my-foot span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.my-foot button{min-height:44px;padding:0 14px;border:1px solid #aeb9c2;border-radius:10px;background:#fff;color:#4a5762;font-size:16px}
+.my-foot p{flex-basis:100%;margin:6px 0 0;font-size:14.5px}
+.my-names{display:grid;gap:8px;max-height:56vh;overflow:auto;padding:2px}
+.my-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;min-height:58px;padding:8px 14px;border:2px solid #aeb9c2;border-radius:12px;background:#fff;color:#17212b;text-align:left}
+.my-name b{font-size:22px}
+.my-name span{font-size:15px;color:#4a5762}
+.my-dots{display:flex;justify-content:center;gap:16px;margin:4px 0}
+.my-dots i{width:22px;height:22px;border:2px solid #1f5f8b;border-radius:50%}
+.my-dots i.on{background:#1f5f8b}
+.my-keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.my-keys button{min-height:66px;border:2px solid #aeb9c2;border-radius:12px;background:#fff;color:#17212b;font-size:28px;font-weight:700}
+.my-keys button:active{background:#e8f0f6}
+.my-keys .my-key-small{font-size:17px;font-weight:600;color:#4a5762}
+.my-nav{display:grid;grid-template-columns:86px 1fr 86px;gap:6px;align-items:stretch;margin:0 0 8px}
+.my-nav button{min-height:62px;border:2px solid #1f5f8b;border-radius:12px;background:#fff;color:#1f5f8b;font-size:22px;font-weight:700;line-height:1.1}
+.my-nav button small{display:block;font-size:13px;font-weight:600}
+.my-nav>div{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;background:#1f5f8b;color:#fff}
+.my-nav>div small{font-size:14px}
+.my-nav>div b{font-size:21px}
+.my-back{display:block;width:100%;min-height:46px;margin:0 0 8px;border:2px solid #aeb9c2;border-radius:10px;background:#fff;color:#4a5762;font-size:17px;font-weight:600}
+.my-day .my-mark.my-rest{font-size:14px;font-weight:600;color:#b0736a;padding-top:4px}
+.my-day.my-sat .my-mark.my-rest{color:#6f86ad}
+.my-team{margin:16px 0 0;padding:14px 14px 6px;border:1px solid #d5dce2;border-radius:14px;background:#fff}
+.my-team h2{margin:0 0 10px;padding:0;border:0;background:none;font-size:20px;color:#17212b}
+.my-team h2 small{display:block;font-size:14.5px;font-weight:400;color:#66737f}
+.my-sat-row{padding:10px 0;border-top:1px solid #e6ebee}
+.my-sat-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 10px}
+.my-sat-head>b{font-size:18px}
+.my-sat-head span{font-size:16px;color:#4a5762}
+.my-sat-head span b{font-size:20px;color:#17212b}
+.my-sat-bar{position:relative;height:14px;margin:6px 0 8px;border-radius:7px;background:#e3edf8;overflow:hidden}
+.my-sat-bar i{display:block;height:100%;background:#1f5f8b}
+.my-sat-bar::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:#17212b}
+.my-sat-names{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.my-sat-names span{padding:3px 10px;border:1px solid #aeb9c2;border-radius:14px;font-size:16px;background:#fff}
+.my-sat-names span.me{border-color:#1f5f8b;background:#e8f0f6;font-weight:700}
+.my-sat-names em{font-style:normal;font-size:15px;color:#66737f}
+.my-sheet-team{margin:0;padding:8px 12px;border-radius:10px;background:#e3edf8;font-size:16px}
+.my-sheet-team b{font-size:19px}</style>
+</head>
+<body>
+<noscript>이 화면은 자바스크립트를 켜야 쓸 수 있습니다.</noscript>
+<script>globalThis.SITE_MY_ONLY=true;
+(function(root){
+'use strict';
+const URL="https://qbrwzldrlwtiawgzwvit.supabase.co",KEY="sb_publishable_KYbhVSUqKMLCKmsrG35Uag__oaP2UER";
+async function rpc(name,args){
+ let r;try{r=await fetch(URL+'/rest/v1/rpc/'+name,{method:'POST',cache:'no-store',referrerPolicy:'no-referrer',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify(args)});}catch{throw Error('NETWORK');}
+ const text=await r.text();let data=null;try{data=text?JSON.parse(text):null;}catch{}
+ if(!r.ok)throw Error(String(data&&data.message||'HTTP '+r.status));
+ return data;
+}
+root.SiteCloud={allowed:()=>false,generation:0,
+ explain:e=>/NETWORK|HTTP 5/.test(String(e&&e.message||e))?'연결하지 못했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.':'처리하지 못했습니다. 잠시 뒤에 다시 해 주세요.',
+ staffDoor:(key,site='south')=>rpc('site_staff_door',{site_name:site,link_key:key}),
+ staffEnter:(key,person,pin,site='south')=>rpc('site_staff_enter',{site_name:site,link_key:key,person_id:person,pin}),
+ staffMine:(token,period,site='south')=>rpc('site_staff_my',{site_name:site,token,period_key:period}),
+ staffMineMark:(token,day,value,site='south')=>rpc('site_staff_my_mark',{site_name:site,token,day_key:day,value}),
+ staffLeave:async(token,site='south')=>(await rpc('site_staff_leave',{site_name:site,token}))===true};
+})(globalThis);
+/* 근무 현황: 직원이 [내 근무]에서 넣은 근무계획표 표시(●◇◑◐△, 교육·출장 등)로 남측 직원의 재직·출근·부재를 센다. 엑셀은 올리지 않는다.
+   표시 → 사유 규칙은 팀 엑셀 '인력현황'의 변환설정과 같다(2026-11-19: 남측 84명×30일 2,520칸을 엑셀 근무현황 시트와 대조해 차이 0).
+     주말·휴일: ●(휴일근무)만 출근이고 그 밖은 모두 휴무.
+     평일: 공란·●·반차(◐◑)는 출근, ◇·△·연차는 휴무, 교육류는 교육, 검진은 건강검진, 그 밖의 글은 적힌 그대로 부재.
+   사람: {id,name,zone,team,role,type,from?,to?} — zone이 '남'인 사람만 센다. 표시: {id:{'YYYY-MM-DD':표시}}.
+   휴일 기본값은 팀 엑셀 변환설정의 공휴일 목록(2030-09까지)이다. 기간마다 근무계획표에서 요일을 눌러 고친 값이 있으면 그 값을 쓴다. */
+(function(root){
+'use strict';
+const WEEK=['일','월','화','수','목','금','토'];
+const MAIN=['휴무','교육','출장','회의'];           // 따로 색을 주는 사유. 나머지는 '기타'로 묶는다
+const CYCLE=16;                                     // 근무계획표는 16일~다음 달 15일
+const ZONE='남';
+const CONVERT=new Map([['◇','휴무'],['△','휴무'],['연차','휴무'],['교육','교육'],['S/A교육','교육'],['사내교육','교육'],['직무교육','교육'],['퇴직교육','교육'],['퇴직예정자교육','교육'],['품질교육','교육'],['검진','건강검진'],['건강검진','건강검진'],['출장','출장'],['수장고근무','수장고']]);
+const HOLIDAYS=['2026-12-25','2027-01-01','2027-02-06','2027-02-07','2027-02-08','2027-02-09','2027-03-01','2027-05-01','2027-05-03','2027-05-05','2027-05-13','2027-06-06','2027-07-17','2027-07-19','2027-08-15','2027-08-16','2027-09-14','2027-09-15','2027-09-16','2027-10-03','2027-10-04','2027-10-09','2027-10-11','2027-12-25','2027-12-27',
+ '2028-01-01','2028-01-26','2028-01-27','2028-01-28','2028-03-01','2028-04-12','2028-05-01','2028-05-02','2028-05-05','2028-06-06','2028-07-17','2028-08-15','2028-10-02','2028-10-03','2028-10-04','2028-10-05','2028-10-09','2028-12-25',
+ '2029-01-01','2029-02-12','2029-02-13','2029-02-14','2029-03-01','2029-05-01','2029-05-05','2029-05-07','2029-05-20','2029-05-21','2029-06-06','2029-07-17','2029-08-15','2029-09-21','2029-09-22','2029-09-23','2029-09-24','2029-10-03','2029-10-09','2029-12-25',
+ '2030-01-01','2030-02-02','2030-02-03','2030-02-04','2030-02-05','2030-03-01','2030-05-01','2030-05-05','2030-05-06','2030-05-09','2030-06-05','2030-06-06','2030-07-17','2030-08-15','2030-09-11','2030-09-12','2030-09-13'];
+const iso=t=>new Date(t).toISOString().slice(0,10);
+const shift=(day,n)=>iso(Date.parse(day+'T00:00:00Z')+n*864e5);
+const dow=day=>new Date(day+'T00:00:00Z').getUTCDay();
+const squash=v=>String(v??'').replace(/\s+/g,'');
+const group=reason=>MAIN.includes(reason)?reason:'기타';
+const holidaysIn=(start,end)=>HOLIDAYS.filter(d=>d>=start&&d<=end);
+const off=(day,holidays)=>{const w=dow(day);return w===0||w===6||(holidays||[]).includes(day);};
+/* 표시 한 칸의 부재 사유. 출근이면 ''. */
+function reason(mark,isOff){
+ const m=squash(mark);
+ if(isOff)return m==='●'?'':'휴무';
+ if(!m||m==='●'||m==='◐'||m==='◑')return '';
+ return CONVERT.get(m)??m;
+}
+const active=(person,day)=>(!person.from||person.from<=day)&&(!person.to||day<=person.to);
+const counted=(person,day)=>person.zone===ZONE&&active(person,day);
+const status=(marks,id,day,holidays)=>reason(marks?.[id]?.[day],off(day,holidays));
+/* 그날의 재직·출근·부재. 재직은 전입일~전출일 안에 있는 남측 직원이다. */
+function dayModel(people,marks,day,holidays){
+ const staff=(people||[]).filter(p=>counted(p,day)),absent=[],here=[],byReason={},teams=new Map();let field=0,safety=0;
+ for(const p of staff){
+  const why=status(marks,p.id,day,holidays),t=teams.get(p.team)||{team:p.team,total:0,present:0,why:{}};teams.set(p.team,t);t.total++;
+  if(why){absent.push({id:p.id,name:p.name,team:p.team,reason:why});byReason[why]=(byReason[why]||0)+1;t.why[group(why)]=(t.why[group(why)]||0)+1;}
+  else{t.present++;here.push({id:p.id,name:p.name,team:p.team});if(p.type==='시공')field++;if(p.type==='안전')safety++;}
+ }
+ return {day,total:staff.length,present:staff.length-absent.length,absent,here,byReason,teams:[...teams.values()].sort((a,b)=>a.team.localeCompare(b.team,'ko')),field,safety};
+}
+/* day가 들어 있는 근무표 기간(16일~다음 달 15일). 매달 16일이 되면 다음 기간으로 넘어간다. key는 시작하는 달 'YYYY-MM'. */
+function period(day){
+ const [y,m,d]=day.split('-').map(Number),start=d>=CYCLE?Date.UTC(y,m-1,CYCLE):Date.UTC(y,m-2,CYCLE),s=new Date(start),end=Date.UTC(s.getUTCFullYear(),s.getUTCMonth()+1,CYCLE-1),days=[];
+ for(let t=start;t<=end;t+=864e5)days.push(iso(t));
+ return {key:days[0].slice(0,7),start:days[0],end:days.at(-1),days};
+}
+const ahead=(day,n=14)=>Array.from({length:n},(_,i)=>shift(day,i));
+/* 화면에 보이는 기간을 엑셀로: 팀·직책·이름·구분 + 날짜별 사유, 위에 날짜별 출근 인원. */
+function build(ExcelJS,{people,marks,holidays,day}){
+ const p=period(day),book=new ExcelJS.Workbook(),ws=book.addWorksheet('근무 현황',{views:[{state:'frozen',xSplit:4,ySplit:4}]}),staff=people.filter(x=>p.days.some(d=>counted(x,d)));
+ ws.getCell('A1').value=`근무 현황 (${p.start} ~ ${p.end})`;ws.getCell('A1').font={bold:true,size:13};
+ ws.getRow(2).values=['팀','직책','이름','구분',...p.days.map(d=>Number(d.slice(8)))];ws.getRow(3).values=['','','','',...p.days.map(d=>WEEK[dow(d)])];
+ ws.getRow(4).values=['출근 인원','','','',...p.days.map(d=>dayModel(people,marks,d,holidays).present)];
+ staff.forEach((x,i)=>{ws.getRow(5+i).values=[x.team,x.role,x.name,x.type,...p.days.map(d=>active(x,d)?status(marks,x.id,d,holidays)||null:'-')];});
+ [10,10,12,9].forEach((w,i)=>{ws.getColumn(i+1).width=w;});p.days.forEach((d,i)=>{ws.getColumn(5+i).width=6;});
+ for(const r of [2,3,4])ws.getRow(r).font={bold:true};
+ return book;
+}
+root.SiteStaff={MAIN,WEEK,ZONE,HOLIDAYS,holidaysIn,off,reason,active,counted,status,dayModel,period,ahead,group,shift,dow,build};if(typeof module!=='undefined')module.exports=root.SiteStaff;
+})(globalThis);
+
+/* 근무계획표: 직원이 [내 근무]에서 넣은 표시를 사업단 전체 표로 모아 취합 → 수정 → 최종 세 단계로 관리하고, 관리팀 양식과 같은 배치의 날인본을 만든다.
+   표 모양(관리팀 양식): 제목 "근무계획표 ('26.11.16~'26.12.15)", 오른쪽 위 결재란, 기호 설명 줄, 구역별 표(NO·현장·부서·성명·직급·날짜·합계 3칸),
+   구역마다 '총 근무인원' 줄, 본 구역에는 '현장근무' 줄, 마지막 본 구역 뒤에 '사업단 전체' 줄. '[…]' 제목이 붙은 표는 직영반 표다.
+   계산(관리팀 엑셀 값과 대조해 확인): 휴일근무=● 수, 연차휴가=◇ 수(반차 제외), 대체휴무=△ 수,
+   총 근무인원=평일은 재직 인원−표시 있는 칸, 주말·휴일은 표시 있는 칸. 전입 전·전출 뒤의 날은 세지 않는다. '현장근무' 줄은 사람이 적는 값이다.
+   서버가 주는 것: 명부 people[{id,block,ord,gs,gd,site,dept,name,rank,from?,to?}], 표시 marks{id:{날짜:표시}}, 표 구성 blocks[{kind,title,sumLabel,fieldLabel}],
+   단계 plan{stage,version,data{holidays?,fields?,base?,confirmed?,final?,closed?,edits?}}, 확정 뒤에 바뀐 칸의 시각 stamps{'id|날짜':시각}.
+   화면·날인본이 쓰는 모양(compose·docOf가 만든다): {start,end,holidays,grand,blocks:[{no,kind,title,sumLabel,fieldLabel,field,rows:[{id,site,dept,name,rank,marks,sg?,dg?,from?,to?}]}],
+   base?(취합 확정본),confirmed?,closed?,edits?}. 날짜 키는 'YYYY-MM-DD'. */
+(function(root){
+'use strict';
+const S=root.SiteStaff||(typeof require!=='undefined'?require('./site-staff.js'):null);
+const WEEK=['일','월','화','수','목','금','토'];
+const MARKS=[['●','휴일근무'],['◇','연차'],['◑','오전반차'],['◐','오후반차'],['△','대체휴무']];
+const WORDS=['교육','S/A\n교육','직무교육','품질\n교육','출장','회의','건강검진','민방위','예비군','남측근무','북측근무','수장고근무'];
+const LEGEND=['구분','●휴일근무','◇연 차','◑오전반차','◐ 오후반차','△ 대체휴무'];
+const STAGES=['collect','revise','final'],STAGE_LABEL={collect:'취합',revise:'수정',final:'최종'};
+const BLOCKS=[{kind:'main',title:'',sumLabel:'합계',fieldLabel:''}];   // 표 구성이 아직 없을 때
+const iso=t=>new Date(t).toISOString().slice(0,10);
+const shift=(day,n)=>iso(Date.parse(day+'T00:00:00Z')+n*864e5);
+const dow=day=>new Date(day+'T00:00:00Z').getUTCDay();
+const squash=v=>String(v??'').replace(/\s+/g,'');
+const flat=v=>String(v??'').replace(/\n/g,' ');
+const str=v=>v===undefined||v===null?'':String(v);
+/* 저장한 시각(UTC)을 한국 시각 'YYYY-MM-DD HH:MM'으로. */
+const when=at=>{const t=Date.parse(at||'');return Number.isNaN(t)?'':new Date(t+9*36e5).toISOString().replace('T',' ').slice(0,16);};
+const off=(day,holidays)=>{const w=dow(day);return w===0||w===6||(holidays||[]).includes(day);};
+/* 그 줄의 사람이 그날 재직 중인가(전입일~전출일). */
+const on=(row,day)=>(!row.from||row.from<=day)&&(!row.to||day<=row.to);
+/* 칸 값: 줄바꿈은 살리고(좁은 칸의 "S/A⏎교육") 앞뒤·중복 공백만 정리한다. 서버도 같은 식으로 정리한다. */
+const clean=v=>String(v??'').replace(/[ \t]*\r?\n[ \t]*/g,'\n').replace(/[ \t]+/g,' ').trim();
+const daysOf=doc=>{const out=[];if(!doc?.start||!doc?.end)return out;for(let d=doc.start;d<=doc.end&&out.length<45;d=shift(d,1))out.push(d);return out;};
+const blockName=block=>[...new Set((block.rows||[]).map(r=>flat(r.site)))].filter(Boolean).join('·')||(block.kind==='direct'?'직영반':'구역');
+const rowSum=(row,days)=>{let work=0,leave=0,alt=0;for(const d of days){const v=squash(row.marks?.[d]);if(v==='●')work++;else if(v==='◇')leave++;else if(v==='△')alt++;}return {work,leave,alt};};
+function blockTotals(block,days,holidays){
+ const rows=block.rows||[],day={},sum={work:0,leave:0,alt:0};
+ for(const d of days){const here=rows.filter(r=>on(r,d)),marked=here.filter(r=>squash(r.marks?.[d])).length;day[d]=off(d,holidays)?marked:here.length-marked;}
+ for(const r of rows){const x=rowSum(r,days);sum.work+=x.work;sum.leave+=x.leave;sum.alt+=x.alt;}
+ return {count:rows.length,day,sum};
+}
+/* '사업단 전체': 직영반 표를 뺀 본 구역의 합. 현장근무는 값이 적힌 날만 더한다. */
+function grandTotals(doc){
+ const days=daysOf(doc),main=(doc.blocks||[]).filter(b=>b.kind!=='direct'),out={count:0,day:{},sum:{work:0,leave:0,alt:0},field:{}};
+ for(const b of main){const t=blockTotals(b,days,doc.holidays);out.count+=t.count;for(const d of days){out.day[d]=(out.day[d]||0)+t.day[d];const f=b.field?.[d];if(typeof f==='number')out.field[d]=(out.field[d]||0)+f;}for(const k of ['work','leave','alt'])out.sum[k]+=t.sum[k];}
+ return out;
+}
+/* 명부와 표시를 구역별 표로 엮는다. 기간에 하루라도 재직한 사람만 넣고, 재직하지 않은 날의 표시는 뺀다.
+   현장·부서의 묶음 번호(gs·gd)나 글이 앞줄과 달라지는 줄에 묶음 표시(sg·dg)를 남긴다. no는 표 구성에서의 순번(현장근무 값의 열쇠)이다. */
+function compose({start,end,people,marks,blocks,holidays,fields,grand}){
+ const defs=blocks?.length?blocks:BLOCKS,days=daysOf({start,end}),last={};
+ const out=defs.map((b,i)=>({no:i,kind:b.kind==='direct'?'direct':'main',title:str(b.title),sumLabel:str(b.sumLabel)||'합계',fieldLabel:str(b.fieldLabel),field:fields?.[i]&&typeof fields[i]==='object'?{...fields[i]}:null,rows:[]}));
+ for(const p of [...(people||[])].filter(p=>(!p.from||p.from<=end)&&(!p.to||p.to>=start)).sort((a,b)=>a.block-b.block||a.ord-b.ord||(a.id<b.id?-1:1))){
+  const block=out[p.block];if(!block)continue;
+  const prev=last[p.block],row={id:p.id,site:str(p.site),dept:str(p.dept),name:str(p.name),rank:str(p.rank),marks:{}};last[p.block]=p;
+  if(p.from&&p.from>start)row.from=p.from;if(p.to&&p.to<end)row.to=p.to;
+  for(const d of days){const m=marks?.[p.id]?.[d];if(m&&on(row,d))row.marks[d]=m;}
+  if(!prev||(prev.gs||0)!==(p.gs||0)||squash(prev.site)!==squash(row.site))row.sg=1;if(row.sg||(prev.gd||0)!==(p.gd||0)||squash(prev.dept)!==squash(row.dept))row.dg=1;
+  block.rows.push(row);
+ }
+ return {start,end,holidays:[...(holidays||[])].sort(),grand:!!grand,blocks:out.filter(b=>b.rows.length)};
+}
+/* 서버가 준 기간 자료를 화면·날인본용 문서로. 마감된 기간은 마감 때 남긴 최종본을, 그 밖에는 지금 명부와 표시를 쓴다.
+   휴일을 아직 정하지 않은 기간은 기본 공휴일 목록을 쓴다. */
+function docOf(x){
+ const data=x.plan?.data||{},stage=x.plan?.stage||'collect',holidays=Array.isArray(data.holidays)?data.holidays:S.holidaysIn(x.start,x.end);
+ const frozen=s=>compose({start:x.start,end:x.end,people:s.people,marks:s.marks,blocks:s.blocks?.length?s.blocks:x.blocks,holidays:s.holidays||holidays,fields:s.fields,grand:s.grand??x.grand});
+ const doc=stage==='final'&&data.final?frozen(data.final):compose({start:x.start,end:x.end,people:x.people,marks:x.marks,blocks:x.blocks,holidays,fields:data.fields,grand:x.grand});
+ if(data.base){const b=frozen(data.base);doc.base={holidays:b.holidays,blocks:b.blocks};doc.confirmed={at:data.confirmed?.at||''};doc.edits={...(data.edits||{})};for(const [k,at] of Object.entries(x.stamps||{}))doc.edits[k]={at};}
+ if(data.closed)doc.closed={at:data.closed.at||''};
+ return doc;
+}
+const stageOf=x=>x?.plan?.stage||'collect';
+/* 인원 관리용. 표(block) 안의 사람을 양식 순서로, 그리고 부서 묶음(같은 묶음 번호·같은 글이 이어지는 줄)으로 나눈다. */
+const inBlock=(people,block)=>(people||[]).filter(p=>p.block===block).sort((a,b)=>a.ord-b.ord||(a.id<b.id?-1:1));
+function deptGroups(people,block){const out=[];for(const p of inBlock(people,block)){const g=out.at(-1);if(g&&g.gs===p.gs&&g.gd===p.gd&&g.site===p.site&&g.dept===p.dept)g.rows.push(p);else out.push({gs:p.gs,gd:p.gd,site:p.site,dept:p.dept,rows:[p]});}return out;}
+/* 새 사람이 들어갈 자리: 고른 묶음의 마지막 사람 바로 아래. same이면 그 묶음의 칸에 같이 넣고(현장·부서 글도 그대로),
+   아니면 같은 현장 묶음 안에 새 부서 칸을 만든다. 묶음이 없으면(빈 표) 표 끝에 새 현장·부서 묶음을 만든다. 묶음 번호는 명부 전체에서 겹치지 않게 잡는다. */
+function slot(people,block,index,same,dept){
+ const list=inBlock(people,block),g=deptGroups(people,block)[index],top=Math.max(0,...(people||[]).map(p=>Math.max(p.gs||0,p.gd||0)));
+ if(!g)return {block,ord:(list.at(-1)?.ord||0)+1,gs:top+1,gd:top+2};
+ const last=g.rows.at(-1),next=list[list.indexOf(last)+1],ord=next?(last.ord+next.ord)/2:last.ord+1;
+ return same?{block,ord,gs:g.gs,gd:g.gd,site:g.site,dept:g.dept}:{block,ord,gs:g.gs,gd:top+1,site:g.site,dept:str(dept)};
+}
+const allRows=x=>(x?.blocks||[]).flatMap(b=>(b.rows||[]).map(r=>({...r,block:b.no})));
+const same=(a,b)=>squash(a)===squash(b);
+/* 취합 확정본(base)과 지금 표의 차이: 바뀐 칸, 추가·삭제된 사람. */
+function changes(doc){
+ const out={cells:[],added:[],removed:[],count:0};if(!doc?.base)return out;
+ const days=daysOf(doc),a=new Map(allRows(doc.base).map(r=>[r.id,r])),b=new Map(allRows(doc).map(r=>[r.id,r]));
+ for(const [id,r] of b){const o=a.get(id);if(!o){out.added.push(r);continue;}for(const d of days){const from=o.marks?.[d]||'',to=r.marks?.[d]||'';if(!same(from,to))out.cells.push({id,day:d,from,to,name:r.name,site:r.site,dept:r.dept,at:doc.edits?.[`${id}|${d}`]?.at||''});}}
+ for(const [id,r] of a)if(!b.has(id))out.removed.push(r);
+ for(const blk of doc.blocks||[]){const o=doc.base.blocks?.find(x=>x.no===blk.no);if(!o||(!blk.field&&!o.field))continue;for(const d of days){const from=o.field?.[d],to=blk.field?.[d];if(from!==to)out.cells.push({id:`f${blk.no}`,day:d,from:str(from),to:str(to),name:'현장근무',site:blockName(blk),dept:'',at:doc.edits?.[`f${blk.no}|${d}`]?.at||''});}}
+ out.count=out.cells.length+out.added.length+out.removed.length;return out;
+}
+/* 화면·엑셀에 보일 판: 'base'는 취합 확정본, 그 밖은 지금 표. */
+const view=(doc,which)=>which==='base'&&doc.base?{...doc,holidays:doc.base.holidays,blocks:doc.base.blocks}:doc;
+/* 연속한 같은 묶음(현장·부서)의 범위. */
+function groups(rows,key){const out=[];rows.forEach((r,i)=>{if(!i||r[key])out.push({from:i,to:i,label:r[key==='sg'?'site':'dept']});else out.at(-1).to=i;});return out;}
+const COL=n=>{let s='';for(;n>0;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s;};
+/* 날인본 엑셀: 원본 양식과 같은 자리(제목 1행, 결재란, 기호 설명 5행, 표 9행부터). mark=true면 확정본과 다른 칸을 노랗게 칠하고, log=true면 '수정 내역' 시트를 붙인다. */
+function build(ExcelJS,{doc,which='current',mark=false,log=false,label=''}){
+ const v=view(doc,which),days=daysOf(doc),n=days.length,D0=6,S0=D0+n,END=S0+2,holidays=v.holidays||[];
+ const book=new ExcelJS.Workbook(),ws=book.addWorksheet('근무계획표',{views:[{showGridLines:false,zoomScale:85}],pageSetup:{paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,horizontalCentered:true,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2},printTitlesRow:'9:11'}});
+ const THIN={style:'thin',color:{argb:'FF000000'}},BOX={top:THIN,left:THIN,bottom:THIN,right:THIN},solid=argb=>({type:'pattern',pattern:'solid',fgColor:{argb}});
+ const SAT=solid('FFBDD7EE'),SUN=solid('FFF8CBAD'),TAN=solid('FFEEECE1'),EDIT=solid('FFFFF2CC'),OUT=solid('FFD9D9D9');
+ const tone=d=>dow(d)===6&&!holidays.includes(d)?SAT:off(d,holidays)?SUN:null;
+ const put=(r,c,value,o={})=>{const x=ws.getCell(r,c);x.value=value===''?null:value;x.font={name:'맑은 고딕',size:o.size||11,bold:o.bold!==false,...(o.color?{color:{argb:o.color}}:{})};x.alignment={horizontal:o.left?'left':'center',vertical:'middle',wrapText:true};if(o.box!==false)x.border=BOX;if(o.fill)x.fill=o.fill;return x;};
+ const box=(r,c,r2,c2,value,o)=>{for(let i=r;i<=r2;i++)for(let j=c;j<=c2;j++)put(i,j,i===r&&j===c?value:null,o);if(r2>r||c2>c)ws.mergeCells(r,c,r2,c2);};
+ const months=[];days.forEach((d,i)=>{const m=Number(d.slice(5,7));if(months.at(-1)?.m===m)months.at(-1).to=i;else months.push({m,from:i,to:i});});
+ const short=d=>`'${d.slice(2,4)}.${d.slice(5,7)}.${d.slice(8)}`;
+ [5.5,10,10,10,9.5,...days.map(()=>4.7),6.5,6.5,6.5].forEach((w,i)=>{ws.getColumn(i+1).width=w;});
+ box(1,1,1,S0-1,`근무계획표 (${short(doc.start)}~${short(doc.end)})${label?' '+label:''}`,{size:30,box:false});ws.getRow(1).height=46;
+ box(1,S0,1,END,'사업단장',{size:16,bold:false});box(2,S0,2,END,null,{bold:false});ws.getRow(2).height=52;
+ for(const r of [3,4,6,7,8])ws.getRow(r).height=6;
+ let c=END;[2,2,3,3,3,3].forEach((w,i)=>{box(5,c-w+1,5,c,LEGEND[5-i],{size:12});c-=w;});ws.getRow(5).height=22;
+ const changed=new Set(),added=new Set();if(mark&&which!=='base'&&doc.base){const ch=changes(doc);for(const x of ch.cells)changed.add(`${x.id}|${x.day}`);for(const x of ch.added)added.add(x.id);}
+ const dayHead=(r,rw)=>{days.forEach((d,i)=>{put(r,D0+i,Number(d.slice(8)));const w=dow(d),hol=holidays.includes(d);put(rw,D0+i,WEEK[w],{fill:tone(d)||undefined,color:w===0||hol?'FFFF0000':w===6?'FF0000CC':undefined});});};
+ const monthHead=r=>{for(const m of months)box(r,D0+m.from,r,D0+m.to,`${m.m}월`,{size:16});};
+ const sumHead=(r,r2)=>{['휴일\n근무','연차\n휴가','대체\n휴무'].forEach((t,i)=>box(r,S0+i,r2,S0+i,t));};
+ const dash=x=>x||'-';
+ let r=9;const lastMain=v.blocks.map(b=>b.kind!=='direct').lastIndexOf(true);
+ v.blocks.forEach((b,bi)=>{
+  if(b.kind==='direct'){box(r,1,r,3,b.title||'[직영반 근무 계획]',{size:16,left:true,box:false});monthHead(r);box(r,S0,r,END,b.sumLabel||'합계');ws.getRow(r).height=26;r++;
+   ['NO','현장','부서','성명','직급'].forEach((t,i)=>box(r,i+1,r+1,i+1,t));dayHead(r,r+1);sumHead(r,r+1);r+=2;}
+  else{['NO','현장','부서','성명','직급'].forEach((t,i)=>box(r,i+1,r+2,i+1,t));monthHead(r);box(r,S0,r,END,b.sumLabel||'합계');ws.getRow(r).height=26;dayHead(r+1,r+2);sumHead(r+1,r+2);r+=3;}
+  const top=r,t=blockTotals(b,days,holidays);
+  b.rows.forEach((x,i)=>{
+   const y=top+i,s=rowSum(x,days),isNew=added.has(x.id);put(y,1,i+1);put(y,2,null);put(y,3,null);put(y,4,x.name,{fill:isNew?EDIT:undefined});put(y,5,x.rank);
+   days.forEach((d,j)=>{const m=x.marks?.[d]||'',hit=changed.has(`${x.id}|${d}`)||isNew&&m;put(y,D0+j,m,{size:m.length>1?9:11,fill:hit?EDIT:!on(x,d)?OUT:tone(d)||undefined});});
+   put(y,S0,dash(s.work),{size:14});put(y,S0+1,dash(s.leave),{size:14});put(y,S0+2,dash(s.alt),{size:14});ws.getRow(y).height=[19,27,38][Math.min(2,Math.max(0,...Object.values(x.marks||{}).map(m=>m.split('\n').length-1)))];
+  });
+  for(const [key,col] of [['sg',2],['dg',3]])for(const g of groups(b.rows,key)){ws.getCell(top+g.from,col).value=g.label||null;if(g.to>g.from)ws.mergeCells(top+g.from,col,top+g.to,col);}
+  r=top+b.rows.length;
+  box(r,1,r,5,'총 근무인원');days.forEach((d,j)=>put(r,D0+j,t.day[d]));put(r,S0,dash(t.sum.work));put(r,S0+1,dash(t.sum.leave));put(r,S0+2,dash(t.sum.alt));r++;
+  const fieldRow=(values,labelText,index)=>{box(r,1,r,5,labelText,{fill:TAN});days.forEach((d,j)=>put(r,D0+j,typeof values?.[d]==='number'?values[d]:null,{color:'FF0000CC',fill:changed.has(`f${index}|${d}`)?EDIT:undefined}));for(let i=0;i<3;i++)put(r,S0+i,null);r++;};
+  if(b.kind!=='direct'&&(b.fieldLabel||b.field))fieldRow(b.field,b.fieldLabel||'현장근무(공종별 CE, SAM)',b.no);
+  if(bi===lastMain&&(doc.grand||v.blocks.filter(x=>x.kind!=='direct').length>1)){
+   const g=grandTotals({...doc,holidays,blocks:v.blocks});put(r,1,g.count);box(r,2,r,5,'사업단 전체');days.forEach((d,j)=>put(r,D0+j,g.day[d]));put(r,S0,dash(g.sum.work));put(r,S0+1,dash(g.sum.leave));put(r,S0+2,dash(g.sum.alt));r++;
+   if(Object.keys(g.field).length)fieldRow(g.field,v.blocks.find(x=>x.fieldLabel)?.fieldLabel||'현장근무(공종별 CE, SAM)',-1);
+  }
+  r++;
+ });
+ ws.pageSetup.printArea=`A$1:${COL(END)}$${r-2}`;
+ if((mark||log)&&which!=='base'&&doc.base){
+  const ch=changes(doc),list=book.addWorksheet('수정 내역');
+  list.getRow(1).values=['구분','현장','부서','성명','날짜','취합 확정본','수정본','수정 시각'];list.getRow(1).font={bold:true};[8,14,16,12,12,14,14,20].forEach((w,i)=>{list.getColumn(i+1).width=w;});
+  let k=2;for(const x of ch.cells)list.getRow(k++).values=['변경',flat(x.site),flat(x.dept),x.name,x.day,flat(x.from)||'(공란)',flat(x.to)||'(공란)',when(x.at)];
+  for(const x of ch.added)list.getRow(k++).values=['추가',flat(x.site),flat(x.dept),x.name,'','','',''];
+  for(const x of ch.removed)list.getRow(k++).values=['삭제',flat(x.site),flat(x.dept),x.name,'','','',''];
+ }
+ return book;
+}
+root.SiteStaffPlan={WEEK,MARKS,WORDS,STAGES,STAGE_LABEL,compose,docOf,stageOf,inBlock,deptGroups,slot,changes,view,groups,daysOf,blockName,blockTotals,grandTotals,rowSum,clean,on,off,dow,shift,squash,flat,when,build};
+if(typeof module!=='undefined')module.exports=root.SiteStaffPlan;
+})(globalThis);
+
+/* 내 근무: 직원 본인이 자기 근무(휴일근무·연차·반차·대체휴무·교육 등)를 넣는 화면. 로그인하지 않는다.
+   관리자가 나눠 준 주소(끝이 #my=열쇠)를 열면 다른 화면 없이 이것만 보인다. 휴대폰에서 쓰기 쉽게 큰 글씨·큰 단추로 그린다.
+   순서: 이름 고르기 → 숫자 4자리(처음 넣은 숫자가 그 사람의 숫자가 된다) → 달력. 한 번 들어온 기기는 받은 표(token)를 기억해 다음부터 바로 달력이 뜬다.
+   ◀ ▶ 로 앞뒤 기간(16일~다음 달 15일)을 넘겨 볼 수 있다. 넣을 수 있는 기간은 서버가 정한다: 기본은 이번 기간과 다음 기간이고, 관리자가 기간마다 열거나 잠근다.
+   달력 아래에는 같은 팀에서 토요일에 누가 출근하는지(휴일근무 ●)와 비율을 보여 준다(관리팀 권장: 팀의 절반쯤).
+   관리팀이 취합을 확정한 뒤에 바꾸면 수정으로 기록되고, 최종 마감 뒤에는 바꿀 수 없다. 열쇠·숫자·표·기간·단계는 모두 DB 함수가 검사한다.
+   기기에 남기는 것(localStorage 'siteone-my'): 열쇠, 고른 사람의 줄 번호, 받은 표. 숫자는 남기지 않는다. */
+(function(root){
+'use strict';
+if(!document.createElementNS||!document.body)return;
+const cloud=root.SiteCloud,S=root.SiteStaff,P=root.SiteStaffPlan;
+if(!cloud||!S||!P)return;
+const SITE='south',STORE='siteone-my',HASH=/^#my(?:=([0-9a-f]{32}))?$/;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>root.PRDDashboard?.today?.()||new Date(Date.now()+9*36e5).toISOString().slice(0,10);
+const label=d=>`${Number(d.slice(5,7))}월 ${Number(d.slice(8))}일 (${S.WEEK[S.dow(d)]})`;
+const short=d=>`${Number(d.slice(5,7))}/${Number(d.slice(8))}`;
+const plain=v=>String(v??'').replace(/\s/g,'');
+const box=document.createElement('section');box.id='site-my';box.className='my';box.hidden=true;box.setAttribute('aria-label','내 근무 입력');document.body.appendChild(box);
+/* 기기에 남기는 값. 저장소를 못 쓰는 브라우저에서는 화면을 닫을 때까지만 기억한다. */
+let kept={key:'',who:'',tokens:{}};
+try{const v=JSON.parse(root.localStorage.getItem(STORE)||'null');if(v&&typeof v==='object')kept={key:/^[0-9a-f]{32}$/.test(v.key)?v.key:'',who:typeof v.who==='string'?v.who:'',tokens:v.tokens&&typeof v.tokens==='object'?Object.fromEntries(Object.entries(v.tokens).filter(([,t])=>/^[0-9a-f]{64}$/.test(t))):{}};}catch{}
+const keep=()=>{try{root.localStorage.setItem(STORE,JSON.stringify(kept));}catch{}};
+const token=()=>kept.tokens[kept.who]||'';
+const s={on:false,serial:0,view:'wait',failed:'',busy:false,people:[],find:'',pick:null,pin:'',first:'',key:'',periods:{},day:'',more:false,note:'',error:false};
+const cur=()=>s.periods[s.key]||null;
+const holidays=x=>Array.isArray(x.holidays)?x.holidays:S.holidaysIn(x.start,x.end);
+const inService=(r,day)=>(!r.from||r.from<=day)&&(!r.to||day<=r.to);
+/* 토요일·일요일·휴일은 표시가 없으면 '휴무'로 보여 준다. 표시가 없을 때 그날을 부르는 말. */
+const rest=(day,hol)=>S.off(day,hol);
+const idle=(day,hol)=>rest(day,hol)?'휴무':'정상 근무';
+const name=m=>{const hit=P.MARKS.find(k=>k[0]===P.squash(m));return hit?hit[1]:P.flat(m);};
+/* 기호는 글꼴마다 크기가 달라(특히 반차 ◑◐) 그림으로 그린다. */
+const ICON={'●':'<circle cx="12" cy="12" r="9" fill="currentColor"/>','◇':'<path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>','△':'<path d="M12 3.5 21.5 20.5h-19Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>',
+ '◑':'<circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 3.2a8.8 8.8 0 0 1 0 17.6Z" fill="currentColor"/>','◐':'<circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 3.2a8.8 8.8 0 0 0 0 17.6Z" fill="currentColor"/>'};
+const icon=m=>ICON[P.squash(m)]?`<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[P.squash(m)]}</svg>`:'';
+function say(text,error=false){s.note=text;s.error=error;const n=box.querySelector('[data-my-note]');if(n){n.textContent=text;n.classList.toggle('my-error',error);}}
+const has=(e,code)=>String(e?.message||e).includes(code);
+/* 이름 고르기: 적은 글자가 들어간 사람만 보인다. */
+function nameList(){
+ const word=plain(s.find),list=s.people.filter(p=>!word||plain(p.name).includes(word));
+ return list.map(p=>`<button type="button" class="my-name" data-my-person="${esc(p.id)}"><b>${esc(p.name)}</b><span>${esc([P.flat(p.site),P.flat(p.dept)].filter(Boolean).join(' · '))}</span></button>`).join('')||'<p class="my-wait">그런 이름이 없습니다. 관리팀에 알려 주세요.</p>';
+}
+function names(){
+ return `<div class="my-card"><p class="my-lead">본인 이름을 골라 주세요.</p><label class="my-field"><span>이름 찾기</span><input type="text" data-my-find maxlength="30" autocomplete="off" placeholder="이름을 적으면 줄어듭니다" value="${esc(s.find)}"></label><div class="my-names" data-my-names>${nameList()}</div></div>`;
+}
+function pinPad(){
+ const p=s.pick,fresh=!p.pin,ask=fresh?(s.first?'확인을 위해 한 번 더 눌러 주세요.':'처음입니다. 앞으로 쓸 숫자 4자리를 정해 주세요.'):'숫자 4자리를 눌러 주세요.';
+ return `<div class="my-card"><div class="my-who"><b>${esc(p.name)}</b><span>${esc([P.flat(p.site),P.flat(p.dept)].filter(Boolean).join(' · '))}</span></div><p class="my-lead">${ask}</p><div class="my-dots" aria-label="넣은 자리 수 ${s.pin.length}">${[0,1,2,3].map(i=>`<i class="${i<s.pin.length?'on':''}"></i>`).join('')}</div><div class="my-keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-my-key="${n}">${n}</button>`).join('')}<button type="button" class="my-key-small" data-my="pin-clear">모두 지움</button><button type="button" data-my-key="0">0</button><button type="button" class="my-key-small" data-my="pin-back" aria-label="한 자리 지움">←</button></div><button type="button" class="my-big my-plain" data-my="names">다른 이름 고르기</button></div>`;
+}
+function calendar(x){
+ const r=x.row,days=S.period(x.start).days,hol=holidays(x),now=x.today||today(),lead=S.dow(days[0]);
+ let h=`<div class="my-cal" role="grid"><div class="my-week" role="row">${S.WEEK.map((w,i)=>`<span role="columnheader" class="${i===0?'my-sun':i===6?'my-sat':''}">${w}</span>`).join('')}</div><div class="my-days">${'<span></span>'.repeat(lead)}`;
+ for(const d of days){const m=x.marks[d]||'',off=S.off(d,hol),out=!inService(r,d),can=x.open&&!out,first=d===days[0]||d.slice(8)==='01';
+  h+=`<button type="button" role="gridcell" class="my-day${off?' my-off':''}${S.dow(d)===6&&!hol.includes(d)?' my-sat':''}${d===now?' my-today':''}${d===s.day?' my-pick':''}${m?' my-has':''}${out?' my-out':''}" data-my-day="${d}" ${can?'':'disabled'} aria-label="${esc(`${label(d)} ${m?name(m):idle(d,hol)}`)}"><span class="my-num">${first?short(d):Number(d.slice(8))}</span><span class="my-mark${icon(m)?'':' my-word'}${!m&&!out&&rest(d,hol)?' my-rest':''}">${icon(m)||esc(P.flat(m))||(!out&&rest(d,hol)?'휴무':'')}</span></button>`;}
+ return h+'</div></div>';
+}
+/* 같은 팀의 토요일 출근. 관리팀은 토요일에 팀의 절반쯤이 나오도록 권한다(막대의 세로줄이 절반). 서버가 자기 팀의 토요일만 준다. */
+const teamDay=(x,day)=>x.team?.days?.find(t=>t.day===day)||null;
+const ratio=t=>{const n=t.on.length,all=n+t.off.length;return {n,all,pct:all?Math.round(n/all*100):0};};
+function saturdays(x){
+ const list=x.team?.days||[];if(!list.length)return '';
+ return `<section class="my-team"><h2>토요일 출근 <small>${esc(x.team.name)} · 절반쯤 출근을 권장</small></h2>${list.map(t=>{const r=ratio(t);
+  return `<div class="my-sat-row"><div class="my-sat-head"><b>${esc(label(t.day))}</b><span>출근 <b>${r.n}</b> / ${r.all}명 · ${r.pct}%</span></div><div class="my-sat-bar" role="img" aria-label="출근 ${r.pct}%, 권장 50%"><i style="width:${Math.min(100,r.pct)}%"></i></div><p class="my-sat-names">${t.on.map(p=>`<span class="${p.me?'me':''}">${esc(p.name)}</span>`).join('')||'<em>아직 출근하는 사람이 없습니다</em>'}</p></div>`;}).join('')}</section>`;
+}
+function sheet(x){
+ if(!s.day)return '';const d=s.day,m=x.marks[d]||'',hol=holidays(x),off=S.off(d,hol),is=v=>P.squash(m)===P.squash(v);
+ const b=(v,text,extra='')=>`<button type="button" class="my-choice${is(v)?' on':''}${extra}" data-my-mark="${esc(v)}">${text}</button>`;
+ const basic=off?b('',`${idle(d,hol)}<small>표시 지움</small>`,' my-wide')+b('●',icon('●')+'휴일근무',' my-wide'):b('','정상 근무<small>표시 지움</small>',' my-wide')+b('◇',icon('◇')+'연차')+b('△',icon('△')+'대체휴무')+b('◑',icon('◑')+'오전반차')+b('◐',icon('◐')+'오후반차')+b('교육','교육')+b('출장','출장');
+ const rest=s.more?`<div class="my-choices">${[...P.MARKS.map(k=>k[0]),...P.WORDS].filter(v=>off?v!=='●':!['◇','△','◑','◐','교육','출장'].includes(v)).map(v=>b(v,icon(v)+esc(name(v)))).join('')}</div><label class="my-field"><span>직접 입력</span><input type="text" data-my-text maxlength="20" value="${esc(P.flat(m))}"></label><button type="button" class="my-big my-plain" data-my="text">적은 대로 넣기</button>`:`<button type="button" class="my-big my-plain" data-my="more">그 밖의 사유 (회의·건강검진·민방위 등)</button>`;
+ return `<div class="my-sheet" role="dialog" aria-label="${esc(label(d))} 근무 고르기"><div class="my-sheet-head"><b>${esc(label(d))}</b><span>지금: ${m?esc(name(m)):idle(d,hol)}</span><button type="button" data-my="close" aria-label="닫기">닫기</button></div>${(t=>t?`<p class="my-sheet-team">이날 ${esc(x.team.name)} 출근 <b>${ratio(t).n}</b> / ${ratio(t).all}명 (${ratio(t).pct}%) · 권장은 절반쯤</p>`:'')(teamDay(x,d))}<div class="my-choices">${basic}</div>${rest}</div>`;
+}
+function main(){
+ const x=cur();if(!x)return '<p class="my-wait">내 근무를 불러오고 있습니다…</p>';
+ const r=x.row,days=S.period(x.start).days,now=S.period(x.today||today()).key,sum={work:0,leave:0,alt:0,half:0};for(const d of days){const m=P.squash(x.marks[d]);if(m==='●')sum.work++;else if(m==='◇')sum.leave++;else if(m==='△')sum.alt++;else if(m==='◑'||m==='◐')sum.half++;}
+ const state=x.stage==='final'?['my-closed','마감된 기간이라 바꿀 수 없습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.']:!x.open?['my-closed','이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.']:x.stage==='revise'?['my-revise','관리팀이 취합을 확정했습니다. 지금 바꾸면 \'수정\'으로 기록됩니다.']:null;   // 평소에는 안내 글을 두지 않는다
+ return `<div class="my-who"><b>${esc(r.name)}</b><span>${esc([P.flat(r.site),P.flat(r.dept),r.rank].filter(Boolean).join(' · '))}</span></div>
+<div class="my-nav"><button type="button" data-my="prev" aria-label="앞 기간">◀<small>앞 기간</small></button><div><small>${s.key===now?'이번 기간':s.key<now?'지난 기간':'다음 기간'}</small><b>${short(x.start)} ~ ${short(x.end)}</b></div><button type="button" data-my="next" aria-label="다음 기간">▶<small>다음 기간</small></button></div>${s.key===now?'':'<button type="button" class="my-back" data-my="now">이번 기간으로 돌아가기</button>'}
+${state?`<p class="my-state ${state[0]}">${state[1]}</p>`:''}${calendar(x)}<p class="my-sum"><span>휴일근무 <b>${sum.work}</b></span><span>연차 <b>${sum.leave}</b></span><span>반차 <b>${sum.half}</b></span><span>대체휴무 <b>${sum.alt}</b></span></p>${saturdays(x)}${sheet(x)}`;
+}
+/* 주소 끝을 #my=열쇠 로 유지한다(홈 화면에 추가하거나 즐겨찾기할 때 이 화면이 저장되게). */
+function keepHash(){const want=kept.key?`#my=${kept.key}`:'#my';if(s.on&&root.location.hash!==want)try{root.history.replaceState(root.history.state,'',want);}catch{}}
+function render(){
+ if(!s.on)return;keepHash();
+ const body=s.view==='wait'?'<p class="my-wait">불러오고 있습니다…</p>'
+  :s.view==='nokey'?`<div class="my-card"><p class="my-lead">${esc(s.failed||'관리자에게 받은 [내 근무 입력] 주소나 QR로 열어 주세요.')}</p><button type="button" class="my-big" data-my="reload">다시 열기</button></div>`
+  :s.view==='fail'?`<div class="my-card"><p class="my-lead">불러오지 못했습니다. ${esc(s.failed)}</p><button type="button" class="my-big" data-my="reload">다시 불러오기</button></div>`
+  :s.view==='names'?names():s.view==='pin'?pinPad():main();
+ const inside=s.view==='cal';
+ box.innerHTML=`<div class="my-wrap"><div class="my-top"><h1>내 근무 입력</h1><span>서리풀 사업단</span></div><p class="my-note${s.error?' my-error':''}" data-my-note role="status" aria-live="polite">${esc(s.note)}</p>${body}<div class="my-foot">${inside?'<button type="button" data-my="reload">다시 불러오기</button><button type="button" data-my="names">다른 이름으로</button><button type="button" data-my="leave">이 기기에서 나가기</button>':''}${cloud.allowed()?'<button type="button" data-my="exit">사이트원 전체 화면</button>':''}<p>이 화면을 휴대폰 홈 화면에 추가해 두면 다음부터 한 번에 열립니다.<br>(크롬: 오른쪽 위 ⋮ → 홈 화면에 추가 · 아이폰 사파리: 공유 → 홈 화면에 추가)</p></div></div>`;
+}
+/* 받은 표가 더는 통하지 않으면 지우고 이름 고르기로 돌아간다. */
+async function expired(){delete kept.tokens[kept.who];kept.who='';keep();s.periods={};say('다시 이름을 고르고 숫자를 넣어 주세요.',true);await openNames();}
+async function loadPeriod(key,force=false){
+ const serial=++s.serial;s.key=key;s.day='';s.more=false;s.view='cal';if(force)delete s.periods[key];render();if(s.periods[key])return true;
+ try{const x=await cloud.staffMine(token(),key,SITE);if(serial!==s.serial)return false;s.periods[key]=x;render();return true;}
+ catch(e){if(serial!==s.serial)return false;if(has(e,'SESSION_INVALID')){await expired();return false;}s.view='fail';s.failed=cloud.explain(e);render();return false;}
+}
+async function openNames(){
+ const serial=++s.serial;s.pick=null;s.pin='';s.first='';s.view='wait';render();
+ try{
+  if(!kept.key&&cloud.allowed()){kept.key=await cloud.staffLinkKey(false,SITE);keep();if(serial!==s.serial)return false;}
+  if(!kept.key){s.view='nokey';s.failed='';render();return false;}
+  const data=await cloud.staffDoor(kept.key,SITE);if(serial!==s.serial)return false;
+  s.people=data.people||[];s.view='names';render();return true;
+ }catch(e){if(serial!==s.serial)return false;
+  if(has(e,'LINK_INVALID')){kept.key='';keep();s.view='nokey';s.failed='주소가 바뀌었습니다. 관리자에게 새 [내 근무 입력] 주소를 받아 주세요.';}else{s.view='fail';s.failed=cloud.explain(e);}
+  render();return false;}
+}
+const start=()=>token()?loadPeriod(S.period(today()).key,true):openNames();
+async function submitPin(pin){
+ const p=s.pick;if(!p||s.busy)return;s.busy=true;say('확인하고 있습니다…');
+ try{
+  const r=await cloud.staffEnter(kept.key,p.id,pin,SITE);
+  if(r.ok){kept.tokens[p.id]=r.token;kept.who=p.id;keep();s.periods={};say(r.fresh?'숫자를 정했습니다. 다음에 다른 기기에서 들어올 때 이 숫자를 씁니다.':'');s.busy=false;await loadPeriod(S.period(today()).key,true);return;}
+  s.pin='';s.first='';if(r.error==='PIN_WRONG'&&!p.pin)p.pin=true;
+  say(r.error==='PIN_LOCKED'?'여러 번 틀려 잠겼습니다. 관리자에게 숫자 초기화를 부탁해 주세요.':r.error==='PIN_WAIT'?`여러 번 틀렸습니다. ${r.minutes||10}분 뒤에 다시 넣어 주세요.`:`숫자가 틀렸습니다. (${r.left}번 더 틀리면 잠깁니다)`,true);
+ }catch(e){s.pin='';s.first='';if(has(e,'LINK_INVALID')){s.busy=false;await openNames();return;}say(has(e,'PERSON_NOT_FOUND')?'명부에서 찾지 못했습니다. 관리팀에 알려 주세요.':cloud.explain(e),true);}
+ finally{s.busy=false;if(s.view==='pin')render();}
+}
+async function pressKey(n){
+ if(s.view!=='pin'||s.busy||s.pin.length>=4)return;s.pin+=n;render();if(s.pin.length<4)return;
+ const pin=s.pin;
+ if(s.pick.pin){await submitPin(pin);return;}
+ if(!s.first){s.first=pin;s.pin='';say('');render();return;}
+ if(s.first!==pin){s.first='';s.pin='';say('두 번 넣은 숫자가 다릅니다. 처음부터 다시 눌러 주세요.',true);render();return;}
+ await submitPin(pin);
+}
+const TEXT={ENTRY_CLOSED:'이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.',MARK_OUT_OF_SERVICE:'전입 전이거나 전출 뒤의 날짜입니다.',PLAN_CLOSED:'마감된 기간이라 바꿀 수 없습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.',INVALID_RECORD:'넣을 수 없는 글입니다. 20자 안으로 적어 주세요.'};
+async function save(value){
+ const x=cur(),day=s.day;if(!x||!day||s.busy||!x.open||!inService(x.row,day))return;s.busy=true;say('저장하고 있습니다…');
+ try{const saved=await cloud.staffMineMark(token(),day,P.clean(value),SITE);if(saved.mark)x.marks[day]=saved.mark;else delete x.marks[day];x.stage=saved.stage||x.stage;
+  const t=teamDay(x,day);if(t){const me=[...t.on,...t.off].find(p=>p.me)||{name:x.row.name,me:true},on=P.squash(saved.mark)==='●';t.on=t.on.filter(p=>!p.me);t.off=t.off.filter(p=>!p.me);(on?t.on:t.off).push(me);}
+  s.day='';s.more=false;say(`${label(day)} → ${saved.mark?name(saved.mark):idle(day,holidays(x))} 저장했습니다.${x.stage==='revise'?' (수정으로 기록)':''}`);}
+ catch(e){if(has(e,'SESSION_INVALID')){s.busy=false;await expired();return;}const k=Object.keys(TEXT).find(t=>has(e,t));say(k?TEXT[k]:cloud.explain(e),true);if(k&&k!=='INVALID_RECORD'){s.busy=false;await loadPeriod(s.key,true);say(TEXT[k],true);}}
+ finally{s.busy=false;if(s.view==='cal')render();}
+}
+function show(on){
+ if(on===s.on)return;s.on=on;box.hidden=!on;document.body.classList.toggle('my-on',on);
+ if(on){s.note='';s.error=false;start();}else{s.serial++;try{if(HASH.test(root.location.hash))root.history.replaceState(root.history.state,'',root.location.pathname+root.location.search);}catch{}}
+}
+box.addEventListener('click',async e=>{
+ const b=e.target.closest('button');if(!b||b.disabled)return;
+ try{
+  if(b.dataset.myPerson){s.pick=s.people.find(p=>p.id===b.dataset.myPerson)||null;if(!s.pick)return;s.pin='';s.first='';say('');
+   if(kept.tokens[s.pick.id]){kept.who=s.pick.id;keep();s.periods={};await loadPeriod(S.period(today()).key,true);return;}
+   s.view='pin';render();return;}
+  if(b.dataset.myKey!==undefined){await pressKey(b.dataset.myKey);return;}
+  if(b.dataset.my==='pin-back'){s.pin=s.pin.slice(0,-1);render();return;}
+  if(b.dataset.my==='pin-clear'){s.pin='';s.first='';say('');render();return;}
+  if(b.dataset.my==='names'){say('');await openNames();return;}
+  if(b.dataset.my==='leave'){const t=token();delete kept.tokens[kept.who];kept.who='';keep();s.periods={};try{if(t)await cloud.staffLeave(t,SITE);}catch{}say('이 기기에서 나갔습니다.');await openNames();return;}
+  if(b.dataset.my==='exit'){show(false);return;}
+  if(b.dataset.my==='reload'){say('');if(s.view==='cal')await loadPeriod(s.key,true);else await start();return;}
+  if(b.dataset.my==='prev'){await loadPeriod(S.period(S.shift(cur()?.start||S.period(today()).start,-1)).key);return;}
+  if(b.dataset.my==='next'){await loadPeriod(S.period(S.shift(cur()?.end||S.period(today()).end,1)).key);return;}
+  if(b.dataset.my==='now'){await loadPeriod(S.period(today()).key);return;}
+  if(b.dataset.myDay){s.day=s.day===b.dataset.myDay?'':b.dataset.myDay;s.more=false;render();return;}
+  if(b.dataset.my==='close'){s.day='';s.more=false;render();return;}
+  if(b.dataset.my==='more'){s.more=true;render();return;}
+  if(b.dataset.my==='text'){await save(box.querySelector('[data-my-text]').value);return;}
+  if(b.dataset.myMark!==undefined){await save(b.dataset.myMark);return;}
+ }catch(err){say(cloud.explain(err),true);}
+});
+box.addEventListener('input',e=>{if(e.target.matches('[data-my-find]')){s.find=e.target.value;box.querySelector('[data-my-names]').innerHTML=nameList();}});
+document.addEventListener('keydown',e=>{if(!s.on||s.view!=='pin')return;if(/^[0-9]$/.test(e.key)){e.preventDefault();pressKey(e.key);}else if(e.key==='Backspace'){e.preventDefault();s.pin=s.pin.slice(0,-1);render();}});
+function fromHash(){const m=HASH.exec(root.location.hash);if(!m)return false;if(m[1]&&m[1]!==kept.key){kept.key=m[1];keep();}return true;}
+root.addEventListener?.('hashchange',()=>{if(fromHash()){if(s.on)start();else show(true);}});
+root.addEventListener?.('load',keepHash);
+/* 밖에서 쓰는 한 파일짜리 화면(SITE_MY_ONLY)은 주소에 #my 가 없어도 이 화면뿐이다. */
+if(fromHash()||root.SITE_MY_ONLY)show(true);
+root.SiteStaffMyUI={open:()=>show(true),close:()=>show(false),get shown(){return s.on;}};
+})(globalThis);
+</script>
+</body>
+</html>
