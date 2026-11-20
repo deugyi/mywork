@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Gwu+/gbpCHKm8MT/rccpHg5dBx9gBScDP7J5tydpj08='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kmPaaEr+QEc/z7R+pr2YwoQ1nlP8KxMGqFp3HNH4f0g='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>내 근무 입력</title>
@@ -407,7 +407,7 @@ function nameList(){
  return list.map(p=>`<button type="button" class="my-name" data-my-person="${esc(p.id)}"><b>${esc(p.name)}</b><span>${esc([P.flat(p.site),P.flat(p.dept)].filter(Boolean).join(' · '))}</span></button>`).join('')||'<p class="my-wait">그런 이름이 없습니다. 관리팀에 알려 주세요.</p>';
 }
 function names(){
- return `<div class="my-card"><p class="my-lead">본인 이름을 골라 주세요.</p><label class="my-field"><span>이름 찾기</span><input type="text" data-my-find maxlength="30" autocomplete="off" placeholder="이름을 적으면 줄어듭니다" value="${esc(s.find)}"></label><div class="my-names" data-my-names>${nameList()}</div></div>`;
+ return `<div class="my-card"><p class="my-lead">본인 이름을 입력 또는 선택하세요.</p><label class="my-field"><input type="text" data-my-find maxlength="30" autocomplete="off" aria-label="이름 입력" placeholder="이름 입력" value="${esc(s.find)}"></label><div class="my-names" data-my-names>${nameList()}</div></div>`;
 }
 function pinPad(){
  const p=s.pick,fresh=!p.pin,ask=fresh?(s.first?'확인을 위해 한 번 더 눌러 주세요.':'처음입니다. 앞으로 쓸 숫자 4자리를 정해 주세요.'):'숫자 4자리를 눌러 주세요.';
