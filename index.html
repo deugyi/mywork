@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hmQnJBwuGim7jWxGP64HkA5oD5lPWDdhnpRY4BrbaPQ='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZSro7azQXBABAxuFDqPgYYH1zUsDQmJZBNcKKe6WwrM='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>내 근무 입력</title>
@@ -165,11 +165,11 @@ function reason(mark,isOff){
  return CONVERT.get(m)??m;
 }
 const active=(person,day)=>(!person.from||person.from<=day)&&(!person.to||day<=person.to);
-const counted=(person,day)=>person.zone===ZONE&&active(person,day);
+const counted=(person,day,zone=ZONE)=>person.zone===zone&&active(person,day);
 const status=(marks,id,day,holidays)=>reason(marks?.[id]?.[day],off(day,holidays));
 /* 그날의 재직·출근·부재. 재직은 전입일~전출일 안에 있는 남측 직원이다. */
-function dayModel(people,marks,day,holidays){
- const staff=(people||[]).filter(p=>counted(p,day)),absent=[],here=[],byReason={},teams=new Map();let field=0,safety=0;
+function dayModel(people,marks,day,holidays,zone=ZONE){
+ const staff=(people||[]).filter(p=>counted(p,day,zone)),absent=[],here=[],byReason={},teams=new Map();let field=0,safety=0;
  for(const p of staff){
   const why=status(marks,p.id,day,holidays),t=teams.get(p.team)||{team:p.team,total:0,present:0,why:{}};teams.set(p.team,t);t.total++;
   if(why){absent.push({id:p.id,name:p.name,team:p.team,reason:why});byReason[why]=(byReason[why]||0)+1;t.why[group(why)]=(t.why[group(why)]||0)+1;}
@@ -185,11 +185,11 @@ function period(day){
 }
 const ahead=(day,n=14)=>Array.from({length:n},(_,i)=>shift(day,i));
 /* 화면에 보이는 기간을 엑셀로: 팀·직책·이름·구분 + 날짜별 사유, 위에 날짜별 출근 인원. */
-function build(ExcelJS,{people,marks,holidays,day}){
- const p=period(day),book=new ExcelJS.Workbook(),ws=book.addWorksheet('근무 현황',{views:[{state:'frozen',xSplit:4,ySplit:4}]}),staff=people.filter(x=>p.days.some(d=>counted(x,d)));
+function build(ExcelJS,{people,marks,holidays,day,zone=ZONE}){
+ const p=period(day),book=new ExcelJS.Workbook(),ws=book.addWorksheet('근무 현황',{views:[{state:'frozen',xSplit:4,ySplit:4}]}),staff=people.filter(x=>p.days.some(d=>counted(x,d,zone)));
  ws.getCell('A1').value=`근무 현황 (${p.start} ~ ${p.end})`;ws.getCell('A1').font={bold:true,size:13};
  ws.getRow(2).values=['팀','직책','이름','구분',...p.days.map(d=>Number(d.slice(8)))];ws.getRow(3).values=['','','','',...p.days.map(d=>WEEK[dow(d)])];
- ws.getRow(4).values=['출근 인원','','','',...p.days.map(d=>dayModel(people,marks,d,holidays).present)];
+ ws.getRow(4).values=['출근 인원','','','',...p.days.map(d=>dayModel(people,marks,d,holidays,zone).present)];
  staff.forEach((x,i)=>{ws.getRow(5+i).values=[x.team,x.role,x.name,x.type,...p.days.map(d=>active(x,d)?status(marks,x.id,d,holidays)||null:'-')];});
  [10,10,12,9].forEach((w,i)=>{ws.getColumn(i+1).width=w;});p.days.forEach((d,i)=>{ws.getColumn(5+i).width=6;});
  for(const r of [2,3,4])ws.getRow(r).font={bold:true};
