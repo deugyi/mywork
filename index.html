@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZSro7azQXBABAxuFDqPgYYH1zUsDQmJZBNcKKe6WwrM='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KKoYk2+d103qPjnzpfoOinVXVGvO1+Wg2tn5dvRiAq0='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>내 근무 입력</title>
@@ -168,12 +168,20 @@ const active=(person,day)=>(!person.from||person.from<=day)&&(!person.to||day<=p
 const counted=(person,day,zone=ZONE)=>person.zone===zone&&active(person,day);
 const status=(marks,id,day,holidays)=>reason(marks?.[id]?.[day],off(day,holidays));
 /* 그날의 재직·출근·부재. 재직은 전입일~전출일 안에 있는 남측 직원이다. */
+/* 근무 현황에서 쓰는 팀 이름. 보통은 명부의 팀 그대로다. 건축팀은 명부의 부서에 적힌 공구로 나눈다(건축 1공구 · 건축 2공구, 공구가 없는 사람은 건축).
+   팀이 비어 있으면(북측·수장고) 부서를 쓴다. 명부와 근무계획표, 내 근무의 토요일 출근은 이 이름을 쓰지 않는다. */
+const SPLIT_BY_SECTION=['건축'];
+function teamOf(person){
+ const team=String(person?.team??'').trim(),dept=String(person?.dept??''),section=/\(\s*(\d+)\s*공구\s*\)/.exec(dept);
+ if(SPLIT_BY_SECTION.includes(team)&&section)return `${team} ${section[1]}공구`;
+ return team||dept.replace(/\s+/g,' ').trim()||String(person?.place??'').trim();
+}
 function dayModel(people,marks,day,holidays,zone=ZONE){
  const staff=(people||[]).filter(p=>counted(p,day,zone)),absent=[],here=[],byReason={},teams=new Map();let field=0,safety=0;
  for(const p of staff){
-  const why=status(marks,p.id,day,holidays),t=teams.get(p.team)||{team:p.team,total:0,present:0,why:{}};teams.set(p.team,t);t.total++;
-  if(why){absent.push({id:p.id,name:p.name,team:p.team,reason:why});byReason[why]=(byReason[why]||0)+1;t.why[group(why)]=(t.why[group(why)]||0)+1;}
-  else{t.present++;here.push({id:p.id,name:p.name,team:p.team});if(p.type==='시공')field++;if(p.type==='안전')safety++;}
+  const why=status(marks,p.id,day,holidays),team=teamOf(p),t=teams.get(team)||{team,total:0,present:0,why:{}};teams.set(team,t);t.total++;
+  if(why){absent.push({id:p.id,name:p.name,team,reason:why});byReason[why]=(byReason[why]||0)+1;t.why[group(why)]=(t.why[group(why)]||0)+1;}
+  else{t.present++;here.push({id:p.id,name:p.name,team});if(p.type==='시공')field++;if(p.type==='안전')safety++;}
  }
  return {day,total:staff.length,present:staff.length-absent.length,absent,here,byReason,teams:[...teams.values()].sort((a,b)=>a.team.localeCompare(b.team,'ko')),field,safety};
 }
@@ -190,12 +198,12 @@ function build(ExcelJS,{people,marks,holidays,day,zone=ZONE}){
  ws.getCell('A1').value=`근무 현황 (${p.start} ~ ${p.end})`;ws.getCell('A1').font={bold:true,size:13};
  ws.getRow(2).values=['팀','직책','이름','구분',...p.days.map(d=>Number(d.slice(8)))];ws.getRow(3).values=['','','','',...p.days.map(d=>WEEK[dow(d)])];
  ws.getRow(4).values=['출근 인원','','','',...p.days.map(d=>dayModel(people,marks,d,holidays,zone).present)];
- staff.forEach((x,i)=>{ws.getRow(5+i).values=[x.team,x.role,x.name,x.type,...p.days.map(d=>active(x,d)?status(marks,x.id,d,holidays)||null:'-')];});
+ staff.forEach((x,i)=>{ws.getRow(5+i).values=[teamOf(x),x.role,x.name,x.type,...p.days.map(d=>active(x,d)?status(marks,x.id,d,holidays)||null:'-')];});
  [10,10,12,9].forEach((w,i)=>{ws.getColumn(i+1).width=w;});p.days.forEach((d,i)=>{ws.getColumn(5+i).width=6;});
  for(const r of [2,3,4])ws.getRow(r).font={bold:true};
  return book;
 }
-root.SiteStaff={MAIN,WEEK,ZONE,HOLIDAYS,holidaysIn,off,reason,active,counted,status,dayModel,period,ahead,group,shift,dow,build};if(typeof module!=='undefined')module.exports=root.SiteStaff;
+root.SiteStaff={MAIN,WEEK,ZONE,HOLIDAYS,holidaysIn,off,reason,active,counted,teamOf,status,dayModel,period,ahead,group,shift,dow,build};if(typeof module!=='undefined')module.exports=root.SiteStaff;
 })(globalThis);
 
 /* 근무계획표: 직원이 [내 근무]에서 넣은 표시를 사업단 전체 표로 모아 취합 → 수정 → 최종 세 단계로 관리하고, 관리팀 양식과 같은 배치의 날인본을 만든다.
