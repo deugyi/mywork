@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KKoYk2+d103qPjnzpfoOinVXVGvO1+Wg2tn5dvRiAq0='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Gwu+/gbpCHKm8MT/rccpHg5dBx9gBScDP7J5tydpj08='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>내 근무 입력</title>
@@ -168,12 +168,13 @@ const active=(person,day)=>(!person.from||person.from<=day)&&(!person.to||day<=p
 const counted=(person,day,zone=ZONE)=>person.zone===zone&&active(person,day);
 const status=(marks,id,day,holidays)=>reason(marks?.[id]?.[day],off(day,holidays));
 /* 그날의 재직·출근·부재. 재직은 전입일~전출일 안에 있는 남측 직원이다. */
-/* 근무 현황에서 쓰는 팀 이름. 보통은 명부의 팀 그대로다. 건축팀은 명부의 부서에 적힌 공구로 나눈다(건축 1공구 · 건축 2공구, 공구가 없는 사람은 건축).
+/* 근무 현황에서 쓰는 팀 이름. 보통은 명부의 팀 그대로다. 건축팀은 공구로 나눈다(건축 1공구 · 건축 2공구).
+   공구는 명부에 정한 값(인원 관리의 공구)이 먼저고, 없으면 부서에 적힌 "(n공구)"를 따른다. 둘 다 없으면 건축으로 남는다.
    팀이 비어 있으면(북측·수장고) 부서를 쓴다. 명부와 근무계획표, 내 근무의 토요일 출근은 이 이름을 쓰지 않는다. */
 const SPLIT_BY_SECTION=['건축'];
 function teamOf(person){
- const team=String(person?.team??'').trim(),dept=String(person?.dept??''),section=/\(\s*(\d+)\s*공구\s*\)/.exec(dept);
- if(SPLIT_BY_SECTION.includes(team)&&section)return `${team} ${section[1]}공구`;
+ const team=String(person?.team??'').trim(),dept=String(person?.dept??''),set=Number(person?.section),section=Number.isInteger(set)&&set>=1&&set<=9?set:Number(/\(\s*(\d+)\s*공구\s*\)/.exec(dept)?.[1])||0;
+ if(SPLIT_BY_SECTION.includes(team)&&section)return `${team} ${section}공구`;
  return team||dept.replace(/\s+/g,' ').trim()||String(person?.place??'').trim();
 }
 function dayModel(people,marks,day,holidays,zone=ZONE){
