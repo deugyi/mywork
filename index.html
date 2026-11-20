@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-EHAHuuUzK65aJ9jqmMvjmAu1fd4zwf0f8bmQyRCS9UQ='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hmQnJBwuGim7jWxGP64HkA5oD5lPWDdhnpRY4BrbaPQ='; style-src 'unsafe-inline'; connect-src https://qbrwzldrlwtiawgzwvit.supabase.co; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>내 근무 입력</title>
@@ -429,7 +429,7 @@ function sheet(x){
 function main(){
  const x=cur();if(!x)return '<p class="my-wait">내 근무를 불러오고 있습니다…</p>';
  const r=x.row,days=S.period(x.start).days,now=S.period(x.today||today()).key,sum={work:0,leave:0,alt:0,half:0};for(const d of days){const m=P.squash(x.marks[d]);if(m==='●')sum.work++;else if(m==='◇')sum.leave++;else if(m==='△')sum.alt++;else if(m==='◑'||m==='◐')sum.half++;}
- const state=x.stage==='final'?['my-closed','마감된 기간이라 바꿀 수 없습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.']:!x.open?['my-closed','이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.']:x.stage==='revise'?['my-revise','관리팀이 취합을 확정했습니다. 지금 바꾸면 \'수정\'으로 기록됩니다.']:null;   // 평소에는 안내 글을 두지 않는다
+ const state=x.stage==='final'?['my-closed','마감된 일정이라, 변경 요청시 관리팀에 문의 부탁드립니다.']:!x.open?['my-closed','이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.']:x.stage==='revise'?['my-revise','관리팀이 취합을 확정했습니다. 지금 바꾸면 \'수정\'으로 기록됩니다.']:null;   // 평소에는 안내 글을 두지 않는다
  return `<div class="my-who"><b>${esc(r.name)}</b><span>${esc([P.flat(r.site),P.flat(r.dept),r.rank].filter(Boolean).join(' · '))}</span></div>
 <div class="my-nav"><button type="button" data-my="prev" aria-label="앞 기간">◀<small>앞 기간</small></button><div><small>${s.key===now?'이번 기간':s.key<now?'지난 기간':'다음 기간'}</small><b>${short(x.start)} ~ ${short(x.end)}</b></div><button type="button" data-my="next" aria-label="다음 기간">▶<small>다음 기간</small></button></div>${s.key===now?'':'<button type="button" class="my-back" data-my="now">이번 기간으로 돌아가기</button>'}
 ${state?`<p class="my-state ${state[0]}">${state[1]}</p>`:''}${calendar(x)}<p class="my-sum"><span>휴일근무 <b>${sum.work}</b></span><span>연차 <b>${sum.leave}</b></span><span>반차 <b>${sum.half}</b></span><span>대체휴무 <b>${sum.alt}</b></span></p>${saturdays(x)}${sheet(x)}`;
@@ -468,7 +468,7 @@ async function submitPin(pin){
  const p=s.pick;if(!p||s.busy)return;s.busy=true;say('확인하고 있습니다…');
  try{
   const r=await cloud.staffEnter(kept.key,p.id,pin,SITE);
-  if(r.ok){kept.tokens[p.id]=r.token;kept.who=p.id;keep();s.periods={};say(r.fresh?'숫자를 정했습니다. 다음에 다른 기기에서 들어올 때 이 숫자를 씁니다.':'');s.busy=false;await loadPeriod(S.period(today()).key,true);return;}
+  if(r.ok){kept.tokens[p.id]=r.token;kept.who=p.id;keep();s.periods={};say('');s.busy=false;await loadPeriod(S.period(today()).key,true);return;}
   s.pin='';s.first='';if(r.error==='PIN_WRONG'&&!p.pin)p.pin=true;
   say(r.error==='PIN_LOCKED'?'여러 번 틀려 잠겼습니다. 관리자에게 숫자 초기화를 부탁해 주세요.':r.error==='PIN_WAIT'?`여러 번 틀렸습니다. ${r.minutes||10}분 뒤에 다시 넣어 주세요.`:`숫자가 틀렸습니다. (${r.left}번 더 틀리면 잠깁니다)`,true);
  }catch(e){s.pin='';s.first='';if(has(e,'LINK_INVALID')){s.busy=false;await openNames();return;}say(has(e,'PERSON_NOT_FOUND')?'명부에서 찾지 못했습니다. 관리팀에 알려 주세요.':cloud.explain(e),true);}
@@ -482,7 +482,7 @@ async function pressKey(n){
  if(s.first!==pin){s.first='';s.pin='';say('두 번 넣은 숫자가 다릅니다. 처음부터 다시 눌러 주세요.',true);render();return;}
  await submitPin(pin);
 }
-const TEXT={ENTRY_CLOSED:'이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.',MARK_OUT_OF_SERVICE:'전입 전이거나 전출 뒤의 날짜입니다.',PLAN_CLOSED:'마감된 기간이라 바꿀 수 없습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.',INVALID_RECORD:'넣을 수 없는 글입니다. 20자 안으로 적어 주세요.'};
+const TEXT={ENTRY_CLOSED:'이 기간은 입력이 잠겨 있습니다. 바꿀 일이 있으면 관리팀에 알려 주세요.',MARK_OUT_OF_SERVICE:'전입 전이거나 전출 뒤의 날짜입니다.',PLAN_CLOSED:'마감된 일정이라, 변경 요청시 관리팀에 문의 부탁드립니다.',INVALID_RECORD:'넣을 수 없는 글입니다. 20자 안으로 적어 주세요.'};
 async function save(value){
  const x=cur(),day=s.day;if(!x||!day||s.busy||!x.open||!inService(x.row,day))return;s.busy=true;say('저장하고 있습니다…');
  try{const saved=await cloud.staffMineMark(token(),day,P.clean(value),SITE);if(saved.mark)x.marks[day]=saved.mark;else delete x.marks[day];x.stage=saved.stage||x.stage;
